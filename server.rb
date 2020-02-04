@@ -10,14 +10,16 @@ server = WEBrick::HTTPServer.new :Port => 8081, :DocumentRoot => root
 
 trap 'INT' do server.shutdown end
 
-$env = OpenStruct.new({root: root})
 load File.join(root, 'web-erb/functions.rb')
+$books = MyBooksViewer.new(root)
 
 def open_erb(req, rsp, name)
+  books = $books;
   fname = File.join('web-erb/', name)
   if File.exist? fname
     erb = ERB.new(IO.read(fname))
-    rsp.body = erb.result(binding)
+    books.req = req;
+    rsp.body = erb.result(books.get_binding)
   else
     rsp.body = "erb file '#{fname}' not found!"
   end
