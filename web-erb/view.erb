@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<% book = req.query['book'] %>
+<html>
+  <body>
+    <p>Hello World!</p>
+    <ul>
+      <li>path=<%= req.path %></li>
+      <li>book=<%= req.query['book'] %></li>
+      <li>pwd=<%= Dir.pwd %></li>
+    </ul>
+    <p><a href="main">Back to Main</a></p>
+    <ul>
+      <% Dir.glob(book + '/*.jpg').sort.each do |imgfile| %>
+      <li><img src="<%=imgfile%>"/></li>
+      <% end %>
+    </ul>
+  </body>
+</html>
