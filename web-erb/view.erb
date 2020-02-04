@@ -1,6 +1,26 @@
 <!DOCTYPE HTML>
 <% book = req.query['book'] %>
+<% prev_book = get_prev_book(book) %>
+<% next_book = get_next_book(book) %>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      #images {
+          max-width:1200px;
+          width:800px;
+          position:relative;
+          left:100px;
+          #right:200px;
+      }
+      body {
+          position:absolute;
+          left:10%;
+          right:10%;
+      }
+    </style>
+  </head>
+
   <body>
     <p>Hello World!</p>
     <ul>
@@ -8,11 +28,24 @@
       <li>book=<%= req.query['book'] %></li>
       <li>pwd=<%= Dir.pwd %></li>
     </ul>
-    <p><a href="main">Back to Main</a></p>
-    <ul>
-      <% Dir.glob(book + '/*.jpg').sort.each do |imgfile| %>
-      <li><img src="<%=imgfile%>"/></li>
-      <% end %>
-    </ul>
+    <div id="images">
+      <p>
+        <% if prev_book %>
+        <a href="view?book=<%= prev_book %>">Prev</a>
+          ||  
+        <% end %>
+        <a href="main">Back to Main</a>
+        <% if next_book %>
+          ||  
+        <a href="view?book=<%= next_book %>">Next</a>
+        <% end %>
+      </p>
+
+      <ul>
+        <% Dir.glob(book + '/*.jpg').sort.each do |imgfile| %>
+        <li><img src="<%=imgfile%>"/></li>
+        <% end %>
+      </ul>
+    </div>
   </body>
 </html>
