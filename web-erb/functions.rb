@@ -32,7 +32,7 @@ class MyBooksViewer
     load_books if not @books
     idx = @books.index{ |b| b.dir == cur }
     rel = idx + inc if idx
-    if idx and 0 <= rel and rel < cur.size
+    if idx and 0 <= rel and rel < @books.size
       @books[rel].dir
     else
       nil
