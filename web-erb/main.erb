@@ -5,18 +5,34 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <title>My Manga Books</title>
+    <style>
+      body {
+          position: absolute;
+          left: 5%;
+      }
+      .book {
+          float: left;
+          margin: 5px;
+          padding: 10px;
+          width: 500px;
+          //height: 80px;
+          border: 1px solid black;
+      }
+    </style>
   </head>
+
   <body>
-    <p>Hello World!</p>
+    <p>Welcome to My Manga Books</p>
     <ul>
       <li>path=<%= req.path %></li>
       <li>pwd=<%= Dir.pwd %></li>
     </ul>
-    <ul>
-      <% books.each do |book| %>
-      <li><a href="view?book=<%=book.dir%>"><%= book.title %></a>
-        <%= " #{book.dir} #{book.img_files.size}P" %></li>
-      <% end %>
-    </ul>
+    <% books.each do |book| %>
+    <div class="book">
+      <%= "#{book.dir} #{book.img_files.size}P" %><br/>
+      <a href="view?book=<%=book.dir%>"><%= book.title %></a>
+    </div>
+    <% end %>
   </body>
 </html>
