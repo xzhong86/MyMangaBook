@@ -14,12 +14,13 @@
   <head>
     <meta charset="utf-8" />
     <title>My Manga Books</title>
+    <script src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
     <style>
       body {
           position: absolute;
           left: 5%;
       }
-      #div_tags {
+      #div_tags_box {
           width: 1080px;
           margin: 0 0 20px 0; # top right buttom left
       }
@@ -43,11 +44,17 @@
       <li>all books=<%= load_books().size %></li>
       <li>books=<%= books.size %></li>
     </ul>
-    <div id="div_tags">
-      <a href="main.erb">Back to All</a>,  All Tags:<br/>
-      <% tags.each do |tag, num| %>
-      <a href="main.erb?tag=<%= tag %>"><%= tag %></a><%= "(#{num})," %>
-      <% end %>
+    <div id="div_tags_box">
+      All Tags:
+      <button onclick="$('#div_tags').show()" >Show Tags</button>,
+      <button onclick="$('#div_tags').hide()" >Hide Tags</button>
+      <br/>
+      <div id="div_tags" hidden="true">
+        <a href="main.erb">Back to All</a>,
+        <% tags.each do |tag, num| %>
+        <a href="main.erb?tag=<%= tag %>"><%= tag %></a><%= "(#{num})," %>
+        <% end %>
+      </div>
     </div>
     <div id="div_books">
       <% books.each do |book| %>
