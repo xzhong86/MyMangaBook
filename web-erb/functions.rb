@@ -19,11 +19,13 @@ class MyBooksViewer
         info = YAML.load(IO.read(info))
         info = OpenStruct.new info
         info.dir = File.basename(dir)
+        info.images = Dir.glob(info.dir + '/*.jpg').sort
         info
       else
         nil
       end
     end.compact
+    books.each.with_index{ |b,i| b.id = 'b' + i.to_s }
     @books = books
     books
   end
@@ -36,12 +38,19 @@ class MyBooksViewer
     @tags
   end
 
+  def get_book(_book)
+    book = nil
+    book ||= @books.find{ |b| b.id == _book }
+    book ||= @books.find{ |b| b.dir == _book }
+    book ||= @books.find{ |b| b.title == _book }
+    book
+  end
   def get_rel_book(cur, inc)
     load_books if not @books
-    idx = @books.index{ |b| b.dir == cur }
+    idx = @books.index{ |b| b.id == cur.id }
     rel = idx + inc if idx
     if idx and 0 <= rel and rel < @books.size
-      @books[rel].dir
+      @books[rel].id
     else
       nil
     end

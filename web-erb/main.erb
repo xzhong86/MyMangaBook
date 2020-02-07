@@ -50,9 +50,9 @@
       <button onclick="$('#div_tags').hide()" >Hide Tags</button>
       <br/>
       <div id="div_tags" hidden="true">
-        <a href="main.erb">Back to All</a>,
+        <a href="main">Back to All</a>,
         <% tags.each do |tag, num| %>
-        <a href="main.erb?tag=<%= tag %>"><%= tag %></a><%= "(#{num})," %>
+        <a href="main?tag=<%= tag %>"><%= tag %></a><%= "(#{num})," %>
         <% end %>
       </div>
     </div>
@@ -60,7 +60,7 @@
       <% books.each do |book| %>
       <div class="book">
         <%= "#{book.dir} #{book.img_files.size}P" %><br/>
-        <a href="view?book=<%=book.dir%>"><%= book.title %></a>
+        <a href="view?book=<%=book.id%>"><%= book.title %></a>
       </div>
       <% end %>
     </div>

@@ -1,16 +1,17 @@
 <!DOCTYPE HTML>
-<% book = req.query['book'] %>
+<% book = get_book(req.query['book']) %>
 <% prev_book = get_prev_book(book) %>
 <% next_book = get_next_book(book) %>
 <html>
   <head>
     <meta charset="utf-8" />
+    <title>My Manga Book</title>
     <style>
       #images {
           max-width:1200px;
           width:800px;
           position:relative;
-          left:100px;
+          #left:100px;
           #right:200px;
       }
       body {
@@ -22,12 +23,15 @@
   </head>
 
   <body>
-    <p>Hello World!</p>
+    <p>My Manga Book: <%= book.dir %></p>
     <ul>
       <li>path=<%= req.path %></li>
       <li>book=<%= req.query['book'] %></li>
       <li>pwd=<%= Dir.pwd %></li>
     </ul>
+    <div>
+      <p>Tags: <%= book.tags.join(',') %></p>
+    </div>
     <div id="images">
       <p>
         <% if prev_book %>
@@ -41,11 +45,11 @@
         <% end %>
       </p>
 
-      <ul>
-        <% Dir.glob(book + '/*.jpg').sort.each do |imgfile| %>
-        <li><img src="<%=imgfile%>"/></li>
+      <div id="image">
+        <% book.images.each do |imgfile| %>
+        <img src="<%=imgfile%>"/>
         <% end %>
-      </ul>
+      </div>
     </div>
   </body>
 </html>
