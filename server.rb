@@ -3,6 +3,7 @@
 require 'webrick'
 require 'erb'
 require 'ostruct'
+require 'open-uri'
 
 root = Dir.pwd
 #root = nil

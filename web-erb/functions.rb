@@ -3,7 +3,7 @@ require 'yaml'
 
 class MyBooksViewer
   def initialize(root)
-    @root = root
+    @bookdir = root
     load_books()
   end
   def get_binding
@@ -13,7 +13,7 @@ class MyBooksViewer
 
   def load_books()
     return @books if @books
-    books = Dir.glob(@root + '/book-*').sort.map do |dir|
+    books = Dir.glob(@bookdir + '/book-*').sort.map do |dir|
       info = File.join(dir, 'info.yaml')
       if File.exist? info
         info = YAML.load(IO.read(info))
@@ -26,6 +26,14 @@ class MyBooksViewer
     end.compact
     @books = books
     books
+  end
+  def load_tags()
+    return @tags if @tags
+    @tags = Hash.new(0)
+    @books.each do |book|
+      book.tags.each { |t| @tags[t] += 1 }
+    end
+    @tags
   end
 
   def get_rel_book(cur, inc)

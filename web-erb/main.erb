@@ -1,6 +1,14 @@
 <!DOCTYPE HTML>
 
-<% books = load_books() %>
+<%
+  books = load_books()
+  tags = load_tags()
+  if req.query['tag']
+    tag = URI.decode(req.query['tag']).to_s
+    tag.force_encoding(Encoding::UTF_8)  # fixme
+    books = books.select{ |b| b.tags.include? tag }
+  end
+%>
 
 <html>
   <head>
@@ -10,6 +18,10 @@
       body {
           position: absolute;
           left: 5%;
+      }
+      #div_tags {
+          width: 1080px;
+          margin: 0 0 20px 0; # top right buttom left
       }
       .book {
           float: left;
@@ -26,13 +38,24 @@
     <p>Welcome to My Manga Books</p>
     <ul>
       <li>path=<%= req.path %></li>
+      <li>query=<%= req.query.to_s %></li>
       <li>pwd=<%= Dir.pwd %></li>
+      <li>all books=<%= load_books().size %></li>
+      <li>books=<%= books.size %></li>
     </ul>
-    <% books.each do |book| %>
-    <div class="book">
-      <%= "#{book.dir} #{book.img_files.size}P" %><br/>
-      <a href="view?book=<%=book.dir%>"><%= book.title %></a>
+    <div id="div_tags">
+      <a href="main.erb">Back to All</a>,  All Tags:<br/>
+      <% tags.each do |tag, num| %>
+      <a href="main.erb?tag=<%= tag %>"><%= tag %></a><%= "(#{num})," %>
+      <% end %>
     </div>
-    <% end %>
+    <div id="div_books">
+      <% books.each do |book| %>
+      <div class="book">
+        <%= "#{book.dir} #{book.img_files.size}P" %><br/>
+        <a href="view?book=<%=book.dir%>"><%= book.title %></a>
+      </div>
+      <% end %>
+    </div>
   </body>
 </html>
