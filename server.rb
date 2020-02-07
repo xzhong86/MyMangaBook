@@ -5,14 +5,8 @@ require 'erb'
 require 'ostruct'
 require 'open-uri'
 
-root = Dir.pwd
-#root = nil
-server = WEBrick::HTTPServer.new :Port => 8081, :DocumentRoot => root
-
-trap 'INT' do server.shutdown end
-
-load File.join(root, 'web-erb/functions.rb')
-$books = MyBooksViewer.new(root)
+load File.join(File.dirname(__FILE__), 'web-erb/functions.rb')
+$books = nil
 
 def open_erb(req, rsp, name)
   books = $books;
@@ -26,24 +20,33 @@ def open_erb(req, rsp, name)
   end
 end
 
-server.mount_proc '/' do |req, rsp|
-  if req.path == '/' or req.path == '/main'
-    open_erb(req, rsp, 'main.erb')
-  elsif req.path == '/view'
-    open_erb(req, rsp, 'view.erb')
-  elsif req.path =~ /.*\.erb$/
-    open_erb(req, rsp, File.basename(req.path))
-  elsif req.path =~ /.*\.(jpg|png|jpeg)/
-    fname = File.join('.', req.path)
-    if File.exist? fname
-      rsp.body = IO.read(fname)
+def start_server(docroot)
+  server = WEBrick::HTTPServer.new :Port => 8081, :DocumentRoot => docroot
+  server.mount_proc '/' do |req, rsp|
+    if req.path == '/' or req.path == '/main'
+      open_erb(req, rsp, 'main.erb')
+    elsif req.path == '/view'
+      open_erb(req, rsp, 'view.erb')
+    elsif req.path =~ /.*\.erb$/
+      open_erb(req, rsp, File.basename(req.path))
+    elsif req.path =~ /.*\.(jpg|png|jpeg)/
+      fname = File.join('.', req.path)
+      if File.exist? fname
+        rsp.body = IO.read(fname)
+      else
+        rsp.body = "image '#{fname}' not found!"
+      end
     else
-      rsp.body = "image '#{fname}' not found!"
+      rsp.body = "Unsupport path=#{req.path}"
     end
-  else
-    rsp.body = "Unsupport path=#{req.path}"
   end
+
+  trap('INT'){ server.shutdown }
+  server.start
 end
 
-server.start
 
+# main
+root = Dir.pwd
+$books = MyBooksViewer.new(root)
+start_server(root)
