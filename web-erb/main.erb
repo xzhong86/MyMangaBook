@@ -27,12 +27,27 @@
       .book {
           float: left;
           margin: 5px;
-          padding: 10px;
+          padding: 5px;
           width: 500px;
           //height: 80px;
           border: 1px solid black;
       }
+      .like_info {
+          float: right;
+      }
     </style>
+    <script type="text/javascript">
+      function mk_like(id, inc) {
+          $.post("/async",
+                 { book: id, like: inc },
+                 function(data, status){
+                     //$("#bk_like_" + id).innerHTML = "Like:" + data; // doesn't work
+                     e = document.getElementById("bk_like_" + id);
+                     e.innerHTML = "Like:" + data
+                 }
+                );
+      }
+    </script>
   </head>
 
   <body>
@@ -60,9 +75,16 @@
       <% books.each do |book| %>
       <div class="book">
         <div>
-          <%= "#{book.dir} #{book.img_files.size}P Like:#{book.nlike}" %>
+          <%= "#{book.dir} #{book.img_files.size}P " %>
+          <div class="like_info">
+            <span id="bk_like_<%= book.id %>"><%= "Like:#{book.nlike}" %></span>
+            <button type="button" onclick="mk_like('<%= book.id %>', -1)">Unlike</button>
+            <button type="button" onclick="mk_like('<%= book.id %>', 1)">Like</button>
+          </div>
         </div>
-        <a href="view?book=<%=book.id%>"><%= book.title %></a>
+        <div>
+          <a href="view?book=<%=book.id%>"><%= book.title %></a>
+        </div>
       </div>
       <% end %>
     </div>

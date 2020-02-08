@@ -27,8 +27,12 @@ def start_server(docroot)
       open_erb(req, rsp, 'main.erb')
     elsif req.path == '/view'
       open_erb(req, rsp, 'view.erb')
+    elsif req.path == '/async'
+      $books.do_async(req, rsp)
+
     elsif req.path =~ /.*\.erb$/
       open_erb(req, rsp, File.basename(req.path))
+
     elsif req.path =~ /.*\.(jpg|png|jpeg)/
       fname = File.join('.', req.path)
       if File.exist? fname
@@ -37,6 +41,7 @@ def start_server(docroot)
         rsp.body = "image '#{fname}' not found!"
       end
     else
+      puts "access unsupport path=#{req.path}"
       rsp.body = "Unsupport path=#{req.path}"
     end
   end

@@ -83,4 +83,13 @@ class MyBooksViewer
     get_rel_book(cur, -1)
   end
 
+  def do_async(req, rsp)
+    if req.query['like']
+      book = get_book(req.query['book'])
+      inc = req.query['like'].to_i
+      book.nlike += 1 if inc > 0
+      book.nlike -= 1 if inc < 0 and book.nlike > 0
+      rsp.body = book.nlike.to_s
+    end
+  end
 end
