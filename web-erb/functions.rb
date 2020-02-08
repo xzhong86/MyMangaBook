@@ -11,6 +11,26 @@ class MyBooksViewer
   end
   attr_accessor :req
 
+  def load_favourite(books)
+    fav = YAML.load(IO.read(@bookdir + '/favourite.yaml'))
+    books.each do |book|
+      if fav[book.dir]
+        book.nlike = fav[book.dir][:like]
+      else
+        book.nlike = 0
+      end
+    end
+  end
+  def store_favourite
+    fav = {}
+    @books.each do |book|
+      if book.nlike > 0
+        fav[book.dir] = { like: book.nlike }
+      end
+    end
+    IO.write(@bookdir + '/favourite.yaml', YAML.dump(fav))
+  end
+
   def load_books()
     return @books if @books
     books = Dir.glob(@bookdir + '/book-*').sort.map do |dir|
@@ -26,6 +46,7 @@ class MyBooksViewer
       end
     end.compact
     books.each.with_index{ |b,i| b.id = 'b' + i.to_s }
+    load_favourite(books)
     @books = books
     books
   end

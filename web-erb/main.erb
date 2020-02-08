@@ -59,7 +59,9 @@
     <div id="div_books">
       <% books.each do |book| %>
       <div class="book">
-        <%= "#{book.dir} #{book.img_files.size}P" %><br/>
+        <div>
+          <%= "#{book.dir} #{book.img_files.size}P Like:#{book.nlike}" %>
+        </div>
         <a href="view?book=<%=book.id%>"><%= book.title %></a>
       </div>
       <% end %>

@@ -41,7 +41,10 @@ def start_server(docroot)
     end
   end
 
-  trap('INT'){ server.shutdown }
+  trap 'INT' do
+    server.shutdown
+    $books.store_favourite
+  end
   server.start
 end
 
