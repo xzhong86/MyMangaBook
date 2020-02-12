@@ -6,6 +6,7 @@
   <head>
     <meta charset="utf-8" />
     <title>My Manga Book</title>
+    <script src="/jquery.min.js" type="text/javascript"></script>
     <style>
       #images {
           max-width:1200px;
@@ -20,6 +21,17 @@
           right:10%;
       }
     </style>
+    <script type="text/javascript">
+      function mk_like(id, inc) {
+          $.post("/async",
+                 { book: id, like: inc },
+                 function(data, status){
+                     e = document.getElementById("bk_like_" + id);
+                     e.innerHTML = "Like:" + data
+                 }
+                );
+      }
+    </script>
   </head>
 
   <body>
@@ -30,7 +42,14 @@
       <li>pwd=<%= Dir.pwd %></li>
     </ul>
     <div>
-      <p>Tags: <%= book.tags.join(',') %></p>
+      <%= "#{book.dir} #{book.images.size}P " %>
+      <div class="like_info">
+        <span id="bk_like_<%= book.id %>"><%= "Like:#{book.nlike}" %></span>
+        <button type="button" onclick="mk_like('<%= book.id %>', -1)">Unlike</button>
+        <button type="button" onclick="mk_like('<%= book.id %>', 1)">Like</button>
+      </div>
+      <%= book.title %><br/>
+      Tags: <%= book.tags.join(',') %>
     </div>
     <div id="images">
       <p>

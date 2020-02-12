@@ -33,6 +33,9 @@ def start_server(docroot)
     elsif req.path =~ /.*\.erb$/
       open_erb(req, rsp, File.basename(req.path))
 
+    elsif req.path =~ /\bjquery.min.js$/
+      rsp.body = IO.read('web-erb/jquery.1.10.2.min.js')
+
     elsif req.path =~ /.*\.(jpg|png|jpeg)/
       fname = File.join('.', req.path)
       if File.exist? fname
@@ -41,7 +44,7 @@ def start_server(docroot)
         rsp.body = "image '#{fname}' not found!"
       end
     else
-      puts "access unsupport path=#{req.path}"
+      puts "access unsupport path='#{req.path}'"
       rsp.body = "Unsupport path=#{req.path}"
     end
   end
