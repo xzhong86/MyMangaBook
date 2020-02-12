@@ -1,6 +1,6 @@
 # MyMangaBook
 
-A Local MangaBook view website, base on ruby (and erb).
+A simple local website to view my manga books, base on ruby (and erb), support to mark which book I like more.
 
 # Requirement
  * Only Ruby 2.0+ is needed. HTTP server like Apache is not required.
