@@ -23,3 +23,12 @@ book-*/
    * web-erb/view.erb : view page to view one book.
    * web-erb/functions.rb : methods use in main/view pages.
  * Read the history to learn how it grow up.
+
+
+# Reference
+
+Sorry, all reference is in Chinese.
+
+* AJAX tutorial: https://www.runoob.com/jquery/jquery-ajax-intro.html
+* JavaScript Output: https://www.runoob.com/js/js-output.html
+* HTML Tags: https://www.w3school.com.cn/tags/index.asp
