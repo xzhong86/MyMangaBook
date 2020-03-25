@@ -38,11 +38,11 @@ end
 
 def get_from(url, opts)
   if url =~ /oreno-erohon.com/
-    opts.xpath = '//div[@id="main"]/article/div/section/img'
-    opts.tags_xpath = '//div[@class="article-tags"][1]/ul/li/a'
+    opts.xpath ||= '//div[@id="main"]/article/div/section/img'
+    opts.tags_xpath ||= '//div[@class="article-tags"][1]/ul/li/a'
   elsif url =~ /eromanga-collector.com/
-    opts.xpath = '//div[@id="main"]/article/div/section/img'
-    opts.tags_xpath = '//table[@class="article-all-taxs"][1]/tr[4]/td/ul/li/a'
+    opts.xpath ||= '//div[@id="main"]/article/div/section/img'
+    opts.tags_xpath ||= '//table[@class="article-all-taxs"][1]/tr[4]/td/ul/li/a'
   else
     fail "unsupported site: #{url}"
   end
@@ -86,6 +86,8 @@ OptionParser.new do |op|
   op.on('--dir DIR', 'get book in DIR') { |d| $opts.dir = d }
   op.on('--curdir', 'get book in current dir') { $opts.dir = nil }
   op.on('-l', '--list LIST', 'get from list') { |l| $opts.list = l }
+  op.on('-x', '--xpath xpath', 'img from xpath') { |x| $opts.xpath = x }
+  op.on('-t', '--tags-xpath xt', 'tags xpath') { |x| $opts.tags_xpath = x }
 end.parse!
 
 if $opts.up_info and not $opts.url
