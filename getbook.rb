@@ -70,6 +70,10 @@ def check_download(url)
     puts "already got it in #{dup}"
     return
   end
+  if $opts.no_download
+    puts "missing #{url}"
+    return
+  end
   pwd = Dir.pwd
   dir = create_dir($opts.dir)
   Dir.chdir dir
@@ -88,6 +92,7 @@ OptionParser.new do |op|
   op.on('-l', '--list LIST', 'get from list') { |l| $opts.list = l }
   op.on('-x', '--xpath xpath', 'img from xpath') { |x| $opts.xpath = x }
   op.on('-t', '--tags-xpath xt', 'tags xpath') { |x| $opts.tags_xpath = x }
+  op.on('-n', '--no-download', 'only check') { $opts.no_download = true }
 end.parse!
 
 if $opts.up_info and not $opts.url
