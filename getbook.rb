@@ -82,7 +82,7 @@ def check_download(url)
 end
 
 # main
-$opts.dir = 'book-t-001'
+$opts.dir = 'books/book-t-001'
 OptionParser.new do |op|
   op.banner = 'getbook.rb [options] url'
   op.on('--url URL', 'get from url') { |u| $opts.url = u }

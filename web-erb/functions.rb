@@ -39,7 +39,9 @@ class MyBooksViewer
         info = YAML.load(IO.read(info))
         info = OpenStruct.new info
         info.dir = File.basename(dir)
-        info.images = Dir.glob(info.dir + '/*.jpg').sort
+        info.images = Dir.glob(dir + '/*.jpg').map do |img|
+          info.dir + '/' + File.basename(img)
+        end.sort
         info
       else
         nil
@@ -90,6 +92,7 @@ class MyBooksViewer
       book.nlike += 1 if inc > 0
       book.nlike -= 1 if inc < 0 and book.nlike > 0
       rsp.body = book.nlike.to_s
+      store_favourite
     end
   end
 end

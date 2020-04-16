@@ -20,7 +20,7 @@ def open_erb(req, rsp, name)
   end
 end
 
-def start_server(docroot)
+def start_server(docroot, bookdir)
   server = WEBrick::HTTPServer.new :Port => 8081, :DocumentRoot => docroot
   server.mount_proc '/' do |req, rsp|
     if req.path == '/' or req.path == '/main'
@@ -37,7 +37,7 @@ def start_server(docroot)
       rsp.body = IO.read('web-erb/jquery.1.10.2.min.js')
 
     elsif req.path =~ /.*\.(jpg|png|jpeg)/
-      fname = File.join('.', req.path)
+      fname = File.join(bookdir, req.path)
       if File.exist? fname
         rsp.body = IO.read(fname)
       else
@@ -59,5 +59,5 @@ end
 
 # main
 root = Dir.pwd
-$books = MyBooksViewer.new(root)
-start_server(root)
+$books = MyBooksViewer.new(root + '/books')
+start_server(root, root + '/books')
