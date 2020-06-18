@@ -57,7 +57,7 @@ def create_dir(dir)
 end
 
 def check_duplicate(url)
-  Dir.glob('book-*/info.yaml').each do |yaml|
+  Dir.glob('books/book-*/info.yaml').each do |yaml|
     info = YAML.load(File.open(yaml).read)
     return File.dirname(yaml) if url == info[:url]
   end

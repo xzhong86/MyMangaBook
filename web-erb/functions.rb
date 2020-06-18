@@ -39,7 +39,9 @@ class MyBooksViewer
         info = YAML.load(IO.read(info))
         info = OpenStruct.new info
         info.dir = File.basename(dir)
-        info.images = Dir.glob(dir + '/*.jpg').map do |img|
+        images = Dir.glob(dir + '/*.jpg')
+        images = Dir.glob(dir + '/*.png') if images.empty?
+        info.images = images.map do |img|
           info.dir + '/' + File.basename(img)
         end.sort
         info
