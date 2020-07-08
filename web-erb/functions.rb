@@ -91,8 +91,8 @@ class MyBooksViewer
     if req.query['like']
       book = get_book(req.query['book'])
       inc = req.query['like'].to_i
-      book.nlike += 1 if inc > 0
-      book.nlike -= 1 if inc < 0 and book.nlike > 0
+      book.nlike += 1 if inc > 0 and book.nlike < 9
+      book.nlike -= 1 if inc < 0 and book.nlike > -3
       rsp.body = book.nlike.to_s
       store_favourite
     end
