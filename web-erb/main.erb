@@ -8,6 +8,10 @@
     tag.force_encoding(Encoding::UTF_8)  # fixme
     books = books.select{ |b| b.tags.include? tag }
   end
+  if req.query['sort']
+    sort_by = req.query['sort'] == 'like' ? :nlike : :nview
+    books = books.sort_by{ |b| b[sort_by]  }.reverse
+  end
 %>
 
 <html>
@@ -61,6 +65,12 @@
       <li>books=<%= books.size %></li>
     </ul>
     <div id="div_tags_box">
+      Sort Books:
+      <a href="main?sort=like">Like,</a>
+      <a href="main?sort=view">View,</a>
+      <a href="main">None,</a>
+    </div>
+    <div id="div_tags_box">
       All Tags:
       <button onclick="$('#div_tags').show()" >Show Tags</button>,
       <button onclick="$('#div_tags').hide()" >Hide Tags</button>
@@ -78,6 +88,7 @@
         <div>
           <%= "#{book.dir} #{book.img_files.size}P " %>
           <div class="like_info">
+            View:<%= book.nview %>,
             <span id="bk_like_<%= book.id %>"><%= "Like:#{book.nlike}" %></span>
             <button type="button" onclick="mk_like('<%= book.id %>', -1)">Unlike</button>
             <button type="button" onclick="mk_like('<%= book.id %>', 1)">Like</button>

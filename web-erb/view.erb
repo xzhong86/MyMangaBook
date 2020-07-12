@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 <% book = get_book(req.query['book']) %>
+<% inc_view(book) %>
 <% prev_book = get_prev_book(book) %>
 <% next_book = get_next_book(book) %>
 <html>
