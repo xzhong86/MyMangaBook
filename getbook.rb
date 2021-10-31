@@ -38,7 +38,7 @@ def get_book(url, opts)
   info.img_files.each.with_index do |url, idx|
     puts "fetching %d/%d %s" % [ idx + 1, img_num, url ]
     fname = "%03d_%s" % [ idx, opts.basename.call(url) ]
-    wget.get(url, fname)
+    wget.get(url, fname) if not File.exist? fname
   end
 end
 
@@ -76,16 +76,20 @@ end
 
 def check_download(url)
   dup = check_duplicate(url)
-  if dup
+  if dup and not $opts.continue
     puts "already got it in #{dup}"
     return
   end
+  if $opts.continue and not dup
+    puts "continue on book which not exist."
+    return
+  end
   if $opts.no_download
-    puts "missing #{url}"
+    puts "missing book: #{url}"
     return
   end
   pwd = Dir.pwd
-  dir = create_dir($opts.dir)
+  dir = dup ? dup : create_dir($opts.dir)
   Dir.chdir dir
   get_from(url, $opts)
   Dir.chdir pwd
@@ -99,6 +103,7 @@ OptionParser.new do |op|
   op.on('--update-info', 'only update info file') { $opts.up_info = true }
   op.on('--dir DIR', 'get book in DIR') { |d| $opts.dir = d }
   op.on('--curdir', 'get book in current dir') { $opts.dir = nil }
+  op.on('-C', '--continue', 'continue on exist book') { $opts.continue = true }
   op.on('-l', '--list LIST', 'get from list') { |l| $opts.list = l }
   op.on('-x', '--xpath xpath', 'img from xpath') { |x| $opts.xpath = x }
   op.on('-t', '--tags-xpath xt', 'tags xpath') { |x| $opts.tags_xpath = x }
