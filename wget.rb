@@ -19,7 +19,7 @@ class MyWGet
   end
   def get(from, to)
     begin
-      open(from) do |fin|
+      URI.open(from) do |fin|
         fout = open(to, 'w')
         fout.write(fin.read)
       end

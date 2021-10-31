@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 #get book from http://oreno-erohon.com
 
@@ -6,6 +7,7 @@ require 'yaml'
 require 'ostruct'
 require 'optparse'
 require 'nokogiri'
+require 'cgi'
 
 load File.expand_path('../wget.rb', __FILE__)
 
@@ -21,8 +23,12 @@ def get_book(url, opts)
   doc = Nokogiri::HTML(File.open(cache, 'r:utf-8'))
   info.url = url
   info.title = doc.title
-  info.tags = doc.xpath(opts.tags_xpath).map{ |e| e.text }
-  info.img_files = doc.xpath(opts.xpath).map{ |e| e['src'] }
+  if opts.tags_xpath
+    info.tags = doc.xpath(opts.tags_xpath).map{ |e| e.text }
+  else
+    info.tags = [ ]
+  end
+  info.img_files = doc.xpath(opts.xpath).map{ |e| e['data-original'] }
   puts 'get tags failed' if info.tags.empty?
 
   File.open("info.yaml", 'w:utf-8').write(YAML.dump(info.to_h))
@@ -31,18 +37,22 @@ def get_book(url, opts)
   img_num = info.img_files.size
   info.img_files.each.with_index do |url, idx|
     puts "fetching %d/%d %s" % [ idx + 1, img_num, url ]
-    fname = "%03d_%s" % [ idx, File.basename(url) ]
+    fname = "%03d_%s" % [ idx, opts.basename.call(url) ]
     wget.get(url, fname)
   end
 end
 
 def get_from(url, opts)
+  opts.basename = proc { |u| File.basename(u) }
   if url =~ /oreno-erohon.com/
     opts.xpath ||= '//div[@id="main"]/article/div/section/img'
     opts.tags_xpath ||= '//div[@class="article-tags"][1]/ul/li/a'
   elsif url =~ /eromanga-collector.com/
     opts.xpath ||= '//div[@id="main"]/article/div/section/img'
     opts.tags_xpath ||= '//table[@class="article-all-taxs"][1]/tr[4]/td/ul/li/a'
+  elsif url =~ /xn--qexm24f3mc.xyz/
+    opts.xpath ||= '//div[@id="contentimg"]/ul/li/img'
+    opts.basename = proc { |u| File.basename(CGI.unescape(u)) }
   else
     fail "unsupported site: #{url}"
   end
