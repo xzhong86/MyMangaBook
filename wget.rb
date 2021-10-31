@@ -4,11 +4,13 @@
 require 'open-uri'
 
 class MyWGet
-  def initialize(time_stride)
+  def initialize(time_stride, retry_times = 0)
     @last_time = Time.now
     @time_stride = time_stride
+    @retry_times = retry_times
   end
   def check_sleep
+    return if not @time_stride
     dif = Time.now - @last_time
     if dif < @time_stride
       if sleep(@time_stride - dif) == 0
@@ -18,15 +20,20 @@ class MyWGet
     @last_time = Time.now
   end
   def get(from, to)
-    begin
-      URI.open(from) do |fin|
-        fout = open(to, 'w')
-        fout.write(fin.read)
+    nr_retry = 0
+    loop do
+      begin
+        URI.open(from) do |fin|
+          fout = open(to, 'w')
+          fout.write(fin.read)
+        end
+        check_sleep
+        return true
+      rescue OpenURI::HTTPError
+        if nr_retry >= @retry_times
+          return false
+        end
       end
-      check_sleep
-      return true
-    rescue OpenURI::HTTPError
-      return false
     end
   end
 end

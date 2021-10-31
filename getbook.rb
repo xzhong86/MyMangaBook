@@ -14,7 +14,7 @@ load File.expand_path('../wget.rb', __FILE__)
 $opts = OpenStruct.new
 
 def get_book(url, opts)
-  wget = MyWGet.new(1)
+  wget = MyWGet.new(opts.fast ? nil : 1, 3)
   cache = 'main-page.html'
   if not File.exist? cache
     wget.get(url, cache)
@@ -104,6 +104,7 @@ OptionParser.new do |op|
   op.on('--dir DIR', 'get book in DIR') { |d| $opts.dir = d }
   op.on('--curdir', 'get book in current dir') { $opts.dir = nil }
   op.on('-C', '--continue', 'continue on exist book') { $opts.continue = true }
+  op.on('-F', '--fast', 'fast mode') { $opts.fast = true }
   op.on('-l', '--list LIST', 'get from list') { |l| $opts.list = l }
   op.on('-x', '--xpath xpath', 'img from xpath') { |x| $opts.xpath = x }
   op.on('-t', '--tags-xpath xt', 'tags xpath') { |x| $opts.tags_xpath = x }
