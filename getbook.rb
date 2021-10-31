@@ -14,7 +14,7 @@ load File.expand_path('../wget.rb', __FILE__)
 $opts = OpenStruct.new
 
 def get_book(url, opts)
-  wget = MyWGet.new(opts.fast ? nil : 1, 3)
+  wget = MyWGet.new(opts.fast ? nil : 1, opts.retry)
   cache = 'main-page.html'
   if not File.exist? cache
     wget.get(url, cache)
@@ -36,10 +36,15 @@ def get_book(url, opts)
 
   img_num = info.img_files.size
   info.img_files.each.with_index do |url, idx|
-    puts "fetching %d/%d %s" % [ idx + 1, img_num, url ]
     fname = "%03d_%s" % [ idx, opts.basename.call(url) ]
-    wget.get(url, fname) if not File.exist? fname
+    if File.exist? fname
+      puts "skip #{fname}"
+    else
+      puts "fetching %d/%d %s" % [ idx + 1, img_num, url ]
+      wget.get(url, fname)
+    end
   end
+  File.open("done.txt", 'w').write("done flag")
 end
 
 def get_from(url, opts)
@@ -80,13 +85,19 @@ def check_download(url)
     puts "already got it in #{dup}"
     return
   end
-  if $opts.continue and not dup
-    puts "continue on book which not exist."
-    return
-  end
-  if $opts.no_download
+  if $opts.no_download and not dup
     puts "missing book: #{url}"
     return
+  end
+  if $opts.continue
+    if not dup and not $opts.list
+      puts "continue on book which not exist."
+      return
+    end
+    if dup and File.exist? File.join(dup, 'done.txt')
+      puts "skip book #{dup} which is done"
+      return
+    end
   end
   pwd = Dir.pwd
   dir = dup ? dup : create_dir($opts.dir)
@@ -97,6 +108,7 @@ end
 
 # main
 $opts.dir = 'books/book-t-001'
+$opts.retry = 3
 OptionParser.new do |op|
   op.banner = 'getbook.rb [options] url'
   op.on('--url URL', 'get from url') { |u| $opts.url = u }
@@ -105,6 +117,7 @@ OptionParser.new do |op|
   op.on('--curdir', 'get book in current dir') { $opts.dir = nil }
   op.on('-C', '--continue', 'continue on exist book') { $opts.continue = true }
   op.on('-F', '--fast', 'fast mode') { $opts.fast = true }
+  op.on('-R', '--retry N', 'retry times') { |n| $opts.retry = n.to_i }
   op.on('-l', '--list LIST', 'get from list') { |l| $opts.list = l }
   op.on('-x', '--xpath xpath', 'img from xpath') { |x| $opts.xpath = x }
   op.on('-t', '--tags-xpath xt', 'tags xpath') { |x| $opts.tags_xpath = x }

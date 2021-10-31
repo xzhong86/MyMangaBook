@@ -32,6 +32,8 @@ class MyWGet
       rescue OpenURI::HTTPError
         if nr_retry >= @retry_times
           return false
+        else
+          sleep 1 # sleep before retry
         end
       end
     end
