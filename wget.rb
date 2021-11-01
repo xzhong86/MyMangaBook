@@ -21,23 +21,25 @@ class MyWGet
   end
   def get(from, to)
     nr_retry = 0
-    loop do
-      begin
-        URI.open(from) do |fin|
-          fout = open(to, 'w')
-          fout.write(fin.read)
-        end
-        check_sleep
-        return true
-      rescue OpenURI::HTTPError
-        if nr_retry >= @retry_times
-          return false
-        else
-          sleep 1 # sleep before retry
-        end
+    begin
+      URI.open(from) do |fin|
+        fout = open(to, 'w')
+        fout.write(fin.read)
+      end
+      check_sleep
+      return true
+    #rescue OpenURI::HTTPError
+    rescue
+      if nr_retry >= @retry_times
+        return false
+      else
+        nr_retry += 1
+        sleep 1 # sleep before retry
+        retry
       end
     end
   end
+
 end
 
 
