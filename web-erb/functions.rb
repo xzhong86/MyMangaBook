@@ -12,7 +12,11 @@ class MyBooksViewer
   attr_accessor :req
 
   def load_favourite
-    fav  = YAML.load(IO.read(@bookdir + '/favourite.yaml'))
+    fav = if File.exists? @bookdir + '/favourite.yaml'
+            YAML.load(IO.read(@bookdir + '/favourite.yaml'))
+          else
+            Hash.new(nil)
+          end
     @books.each do |book|
       if fav_book = fav[book.dir]
         book.nlike = fav_book[:like] || 0
