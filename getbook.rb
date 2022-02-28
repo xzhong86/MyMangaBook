@@ -28,7 +28,7 @@ def get_book(url, opts)
   else
     info.tags = [ ]
   end
-  info.img_files = doc.xpath(opts.xpath).map{ |e| e['data-original'] }
+  info.img_files = doc.xpath(opts.xpath).map{ |e| opts.imgpath.call(e) }
   puts 'get tags failed' if info.tags.empty?
 
   File.open("info.yaml", 'w:utf-8').write(YAML.dump(info.to_h))
@@ -48,6 +48,7 @@ def get_book(url, opts)
 end
 
 def get_from(url, opts)
+  opts.imgpath  = proc { |e| e['src'] }
   opts.basename = proc { |u| File.basename(u) }
   if url =~ /oreno-erohon.com/
     opts.xpath ||= '//div[@id="main"]/article/div/section/img'
@@ -58,15 +59,16 @@ def get_from(url, opts)
   elsif url =~ /xn--qexm24f3mc.xyz/
     opts.xpath ||= '//div[@id="contentimg"]/ul/li/img'
     opts.basename = proc { |u| File.basename(CGI.unescape(u)) }
+    opts.imgpath  = proc { |e| e['data-original'] }
   else
     fail "unsupported site: #{url}"
   end
   get_book(url, opts)
 end
 
-def create_dir(dir)
+def create_dir(dir, url)
   dir.succ! while Dir.exist? dir
-  puts "mkdir " + dir
+  puts "mkdir #{dir} for #{url}"
   Dir.mkdir dir
   dir
 end
@@ -98,9 +100,10 @@ def check_download(url)
       puts "skip book #{dup} which is done"
       return
     end
+    puts "continue download #{url} in #{dup}" if dup
   end
   pwd = Dir.pwd
-  dir = dup ? dup : create_dir($opts.dir)
+  dir = dup ? dup : create_dir($opts.dir, url)
   Dir.chdir dir
   get_from(url, $opts)
   Dir.chdir pwd
