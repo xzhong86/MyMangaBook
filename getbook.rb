@@ -137,8 +137,8 @@ end
 if $opts.list
   # read from list
   IO.readlines($opts.list).each do |url|
-    if url =~ /http/
-      check_download(url.chomp)
+    if url =~ /(http\S+)/
+      check_download($1)
     end
   end
 else
