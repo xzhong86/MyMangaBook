@@ -21,7 +21,10 @@ def open_erb(req, rsp, name)
 end
 
 def start_server(docroot, bookdir)
-  server = WEBrick::HTTPServer.new :Port => 8081, :DocumentRoot => docroot
+  port = 8083
+  ip   = IO.popen("hostname -I").read.split.first
+  puts "start server on http://#{ip}:#{port} ..."
+  server = WEBrick::HTTPServer.new :Port => port, :DocumentRoot => docroot
   server.mount_proc '/' do |req, rsp|
     if req.path == '/' or req.path == '/main'
       open_erb(req, rsp, 'main.erb')
